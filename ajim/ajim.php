@@ -177,7 +177,7 @@ class ajim {
               <tr><td><span style="font-family: arial; font-size: 7pt; ">Name:</span></td>   <td><input style="font-family: arial; font-size: 7pt; border: 1px solid #000; height: 15px; width: 65px; padding: 1px;" id="'.$this->id.'_name" name="name"'.$enstr.' /></td></tr>
               <tr><td><span style="font-family: arial; font-size: 7pt; ">Website:</span></td><td><input style="font-family: arial; font-size: 7pt; border: 1px solid #000; height: 15px; width: 65px; padding: 1px;" id="'.$this->id.'_website" name="website"'.$enstr.' /></td></tr>
               <tr><td colspan="2"><span style="font-family: arial; font-size: 7pt; ">Message:</span></td></tr>
-              <tr><td colspan="2"><textarea'.$enstr.' rows="2" cols="16" style="width: auto; margin: 0 auto;" id="'.$this->id.'_post" name="post" onkeyup="'.$this->id.'_keyhandler();"></textarea></td></tr>
+              <tr><td colspan="2"><textarea'.$enstr.' rows="2" cols="16" style="width: auto; margin: 0 auto;" id="'.$this->id.'_post" name="post"></textarea></td></tr>
               <tr><td colspan="2" align="center"><input'.$enstr.' type="submit" value="Submit post" /><br />
               <span style="font-family: arial; font-size: 6pt; color: #000000;">AjIM powered</span></td></tr>
               ';
@@ -486,6 +486,8 @@ class ajim {
 // The client-side javascript and CSS code
 
 if(isset($_GET['js']) && isset($_GET['id']) && isset($_GET['path']) && isset($_GET['pfx'])) {
+  if ( !preg_match('/^([a-z0-9_]+)$/', $_GET['id']) )
+    die('XSS');
   header('Content-type: text/javascript');
   ?>
   // <script>
@@ -514,18 +516,14 @@ if(isset($_GET['js']) && isset($_GET['id']) && isset($_GET['path']) && isset($_G
   head = head[0];
   head.appendChild(link);
   
-  if(typeof window.onload == 'function')
-    var __ajim_oltemp = window.onload;
-  else
-    var __ajim_oltemp = function(e) { };
-  window.onload = function(e)
+  var <?php echo $_GET['id']; ?>_onload = function(e)
   {
     if(document.getElementById('<?php echo $_GET['id']; ?>_post'))
     {
-      document.getElementById('<?php echo $_GET['id']; ?>_post').onkeyup = function(e) { <?php echo $_GET['id']; ?>_keyhandler(e); };
+      document.getElementById('<?php echo $_GET['id']; ?>_post').onkeyup = <?php echo $_GET['id']; ?>_keyhandler;
     }
-    __ajim_oltemp(e);
   }
+  addOnloadHook(<?php echo $_GET['id']; ?>_onload);
   
   function <?php echo $_GET['id']; ?>readCookie(name) {var nameEQ = name + "=";var ca = document.cookie.split(';');for(var i=0;i < ca.length;i++){var c = ca[i];while (c.charAt(0)==' ') c = c.substring(1,c.length);if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);}return null;}
   function <?php echo $_GET['id']; ?>setCookie(name,value,days){if (days){var date = new Date();date.setTime(date.getTime()+(days*24*60*60*1000));var expires = "; expires="+date.toGMTString();}else var expires = "";document.cookie = name+"="+value+expires+"; path=/";}
@@ -634,8 +632,9 @@ if(isset($_GET['js']) && isset($_GET['id']) && isset($_GET['path']) && isset($_G
   
   function <?php echo $_GET['id']; ?>_keyhandler(e)
   {
-    if(!e) e = window.event;
-    if(e.keyCode == 13)
+    if ( !e )
+      return false;
+    if ( e.keyCode == 13 )
     {
       val = document.getElementById(<?php echo $_GET['id']; ?>id+'_post').value;
       if(!shift)
