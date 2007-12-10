@@ -178,13 +178,13 @@ class ajim {
               <tr><td><span style="font-family: arial; font-size: 7pt; ">Website:</span></td><td><input style="font-family: arial; font-size: 7pt; border: 1px solid #000; height: 15px; width: 65px; padding: 1px;" id="'.$this->id.'_website" name="website"'.$enstr.' /></td></tr>
               <tr><td colspan="2"><span style="font-family: arial; font-size: 7pt; ">Message:</span></td></tr>
               <tr><td colspan="2"><textarea'.$enstr.' rows="2" cols="16" style="width: auto; margin: 0 auto;" id="'.$this->id.'_post" name="post"></textarea></td></tr>
-              <tr><td colspan="2" align="center"><input'.$enstr.' type="submit" value="Submit post" /><br />
+              <tr><td colspan="2" style="text-align: center;"><input'.$enstr.' type="submit" value="Submit post" /><br />
               <span style="font-family: arial; font-size: 6pt; color: #000000;">AjIM powered</span></td></tr>
               ';
     $html .= '</table>
             </form>';
     if($this->admin) {
-      $html .= '<table border="0" style="margin: 0; padding: 0; width: 90%;" align="center"><tr><td colspan="2" align="center"><span id="'.$this->id.'_admin"><a href="#" onclick="'.$this->id.'_prompt(); return false;">Administration</a></span></td></tr></table>';
+      $html .= '<table border="0" style="margin: 0; padding: 0; width: 90%;" style="text-align: center;"><tr><td colspan="2" style="text-align: center;"><span id="'.$this->id.'_admin"><a href="#" onclick="'.$this->id.'_prompt(); return false;">Administration</a></span></td></tr></table>';
     }
     $html.='</div></div>';
     } else {
@@ -195,7 +195,7 @@ class ajim {
       $html .= '</div></div>';
     }
     $html.='<script type="text/javascript">
-    document.getElementById(\''.$this->id.'_c\').innerHTML = unescape(\'%3Cdiv align="center" style="width:95%;"%3EInitializing...%3C\/div%3E\');';
+    document.getElementById(\''.$this->id.'_c\').innerHTML = unescape(\'%3Cdiv style="text-align: center;" style="width:95%;"%3EInitializing...%3C\/div%3E\');';
     if($this->can_post) $html .= 'if('.$this->id.'readCookie("ajim_password") && ( typeof "'.$this->id.'_login_bin" == "string" || typeof "'.$this->id.'_login_bin" == "function" )) {
       '.$this->id.'_login_bin('.$this->id.'readCookie("ajim_password"));
     }
